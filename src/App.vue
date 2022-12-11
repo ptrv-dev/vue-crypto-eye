@@ -1,11 +1,11 @@
 <template>
   <app-header @add-wallet="handleAddWallet" />
   <app-body>
-    <app-wallet-item />
-    <app-wallet-item />
-    <app-wallet-item />
-    <app-wallet-item />
-    <app-wallet-item />
+    <app-wallet-item
+      v-for="wallet in watchList"
+      :key="wallet.address"
+      :wallet="wallet"
+    />
   </app-body>
   <app-loading v-if="isLoading" />
 </template>
@@ -48,7 +48,7 @@ export default {
 
       const newWallet = {
         address: walletAddress,
-        balance: Number(balance) / 1000000000000000000,
+        balance: Number(balance),
         transactions,
       };
 

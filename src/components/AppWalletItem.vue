@@ -3,11 +3,11 @@
     <div class="wallet__info">
       <div class="wallet__info-item">
         <span class="wallet__suptitle">Wallet address:</span>
-        <p>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</p>
+        <p>{{ wallet.address }}</p>
       </div>
       <div class="wallet__info-item">
         <span class="wallet__suptitle">Balance:</span>
-        <p>1.14892 ETH</p>
+        <p>{{ weiToEth(wallet.balance) }} ETH</p>
       </div>
       <div class="wallet__info-item">
         <span class="wallet__suptitle">Last transaction time:</span>
@@ -29,71 +29,44 @@
           <th>time</th>
         </thead>
         <tbody>
-          <tr class="wallet-transactions_in">
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0.31842</td>
-            <td>11.12.2022 / 13:48</td>
-          </tr>
-          <tr class="wallet-transactions_out">
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0.31842</td>
-            <td>11.12.2022 / 13:48</td>
-          </tr>
-          <tr class="wallet-transactions_out">
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0.31842</td>
-            <td>11.12.2022 / 13:48</td>
-          </tr>
-          <tr class="wallet-transactions_in">
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0.31842</td>
-            <td>11.12.2022 / 13:48</td>
-          </tr>
-          <tr class="wallet-transactions_in">
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0.31842</td>
-            <td>11.12.2022 / 13:48</td>
-          </tr>
-          <tr class="wallet-transactions_in">
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0.31842</td>
-            <td>11.12.2022 / 13:48</td>
-          </tr>
-          <tr class="wallet-transactions_in">
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0.31842</td>
-            <td>11.12.2022 / 13:48</td>
-          </tr>
-          <tr class="wallet-transactions_in">
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0.31842</td>
-            <td>11.12.2022 / 13:48</td>
-          </tr>
-          <tr class="wallet-transactions_in">
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0.31842</td>
-            <td>11.12.2022 / 13:48</td>
-          </tr>
-          <tr class="wallet-transactions_out">
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0x0A09a1AEAE4EC7A33E81E7AF93A52F9a7AeFa260</td>
-            <td>0.31842</td>
-            <td>11.12.2022 / 13:48</td>
+          <tr
+            :class="
+              wallet.address.toLowerCase() === transaction.from.toLowerCase()
+                ? 'wallet-transactions_out'
+                : 'wallet-transactions_in'
+            "
+            v-for="(transaction, idx) in wallet.transactions"
+            :key="idx"
+          >
+            <td>{{ transaction.from }}</td>
+            <td>{{ transaction.to }}</td>
+            <td>{{ weiToEth(transaction.value) }}</td>
+            <td>{{ dateBeautify(Number(transaction.timeStamp) * 1000) }}</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 </template>
+
+<script>
+import { weiToEth } from '@/utils/converter';
+export default {
+  props: {
+    wallet: {
+      type: Object,
+      required: true,
+    },
+  },
+  methods: {
+    weiToEth,
+    dateBeautify(unix) {
+      const date = new Date(unix);
+      return `${date.toLocaleDateString()} / ${date.toLocaleTimeString()}`;
+    },
+  },
+};
+</script>
 
 <style lang="scss" scoped>
 @import '@/scss/vars';
