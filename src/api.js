@@ -9,3 +9,13 @@ export async function getTransactions(walletAddress) {
   }
   return response.result;
 }
+
+export async function getBalance(walletAddress) {
+  const response = await fetch(
+    `https://api.etherscan.io/api?module=account&action=balance&address=${walletAddress}&tag=latest&apikey=${API_KEY}`
+  ).then((res) => res.json());
+  if (Number(response.status) !== 1) {
+    throw new Error(response.result);
+  }
+  return response.result;
+}
