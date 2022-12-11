@@ -7,7 +7,7 @@
         <span class="shadow" />
       </div>
       <div class="header__actions">
-        <button class="btn btn_round shadow">
+        <button @click="handleAddButton" class="btn btn_round shadow">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -63,7 +63,28 @@
       </div>
     </div>
   </header>
+  <app-input-modal
+    ref="addWalletModal"
+    title="Add a new wallet to your watch list"
+    label="Wallet address:"
+  />
 </template>
+
+<script>
+import AppInputModal from './AppInputModal.vue';
+
+export default {
+  components: {
+    AppInputModal,
+  },
+  methods: {
+    async handleAddButton() {
+      const result = await this.$refs.addWalletModal.open();
+      console.log(result);
+    },
+  },
+};
+</script>
 
 <style lang="scss" scoped>
 @import '@/scss/vars';

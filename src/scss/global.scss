@@ -66,7 +66,28 @@ button {
   align-items: center;
   background: $white;
   border: none;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  transition: all 0.3s;
+  &_dark {
+    background: $dark;
+  }
+  &_primary {
+    background: $green;
+    &:hover {
+      box-shadow: 0 0 5px $green;
+    }
+  }
+  &_text {
+    background: none;
+    border: none;
+    &:hover {
+      background: lighten($green, 50);
+    }
+  }
   &_round {
+    padding: 0;
     justify-content: center;
     width: 2rem;
     height: 2rem;
