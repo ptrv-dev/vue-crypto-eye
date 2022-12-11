@@ -74,6 +74,9 @@
 import AppInputModal from './AppInputModal.vue';
 
 export default {
+  emits: {
+    loading: null,
+  },
   components: {
     AppInputModal,
   },
@@ -81,6 +84,7 @@ export default {
     async handleAddButton() {
       const result = await this.$refs.addWalletModal.open();
       console.log(result);
+      this.$emit('loading', true);
     },
   },
 };
