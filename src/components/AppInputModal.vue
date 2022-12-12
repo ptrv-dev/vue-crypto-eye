@@ -7,7 +7,13 @@
       <div class="modal__body">
         <label>
           {{ label }}
-          <input v-model="inputValue" type="text" :placeholder="placeholder" />
+          <input
+            v-focus
+            v-model="inputValue"
+            @keypress.enter="handleSubmit"
+            type="text"
+            :placeholder="placeholder"
+          />
         </label>
       </div>
       <div class="modal__actions">

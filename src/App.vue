@@ -37,6 +37,7 @@ export default {
   },
   methods: {
     async handleAddWallet(walletAddress) {
+      if (!walletAddress) return false;
       if (
         this.watchList.findIndex(
           (wallet) => wallet.address === walletAddress
