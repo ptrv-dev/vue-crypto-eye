@@ -1,12 +1,15 @@
 <template>
   <app-header @add-wallet="handleAddWallet" />
-  <app-body>
+  <app-body v-if="watchList.length">
     <app-wallet-item
       v-for="wallet in watchList"
       :key="wallet.address"
       :wallet="wallet"
     />
   </app-body>
+  <div class="container">
+    <h2 class="text-shadow text-uppercase">Your watch list is empty now...</h2>
+  </div>
   <app-loading v-if="isLoading" />
 </template>
 
