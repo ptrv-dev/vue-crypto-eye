@@ -40,21 +40,31 @@ export default {
       )
         return alert('Such wallet already in your watch list!');
 
+      if (!walletAddress.match(/^0x[a-fA-F0-9]{40}$/))
+        return alert('Invalid address format');
+
       this.isLoading = true;
 
-      const transactions = await getTransactions(walletAddress);
-      await new Promise((resolve) => setTimeout(resolve, 1100));
-      const balance = await getBalance(walletAddress);
+      try {
+        const balance = await getBalance(walletAddress);
+        await new Promise((resolve) => setTimeout(resolve, 1100));
+        const transactions = await getTransactions(walletAddress);
 
-      const newWallet = {
-        address: walletAddress,
-        balance: Number(balance),
-        transactions,
-      };
+        const newWallet = {
+          address: walletAddress,
+          balance: Number(balance),
+          transactions,
+        };
 
-      this.watchList.push(newWallet);
-
-      this.isLoading = false;
+        this.watchList.push(newWallet);
+      } catch (error) {
+        if (String(error).toLowerCase().includes('invalid address format'))
+          alert('Invalid address format');
+        else if (String(error).toLowerCase().includes('max rate limit'))
+          alert('Max rate limit, please wait a few seconds');
+      } finally {
+        this.isLoading = false;
+      }
     },
   },
 };
