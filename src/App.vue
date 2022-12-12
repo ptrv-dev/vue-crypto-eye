@@ -7,7 +7,7 @@
       :wallet="wallet"
     />
   </app-body>
-  <div class="container">
+  <div v-else class="container">
     <h2 class="text-shadow text-uppercase">Your watch list is empty now...</h2>
   </div>
   <app-loading v-if="isLoading" />
@@ -51,18 +51,17 @@ export default {
       this.isLoading = true;
 
       try {
-        const balance = await getBalance(walletAddress);
-        // await new Promise((resolve) => setTimeout(resolve, 1100));
-        const transactions = await getTransactions(walletAddress);
-
-        const newWallet = {
-          address: walletAddress,
-          balance: Number(balance),
-          transactions,
-        };
+        const newWallet = await this.createWalletObject(walletAddress);
 
         this.watchList.push(newWallet);
-        this.subscribeToUpdates(walletAddress);
+
+        const localWatchList =
+          JSON.parse(window.localStorage.getItem('watchList')) || [];
+
+        window.localStorage.setItem(
+          'watchList',
+          JSON.stringify([...localWatchList, walletAddress])
+        );
       } catch (error) {
         if (String(error).toLowerCase().includes('invalid address format'))
           alert('Invalid address format');
@@ -79,23 +78,51 @@ export default {
       if (index === -1) return console.error('Subscribe to updates error!');
 
       const interval = setInterval(async () => {
-        console.log('update');
         this.isLoading = true;
-        const balance = await getBalance(walletAddress);
-        // await new Promise((resolve) => setTimeout(resolve, 1100));
-        const transactions = await getTransactions(walletAddress);
 
-        this.watchList[index] = {
-          address: walletAddress,
-          balance,
-          transactions,
-        };
+        const newWallet = await this.createWalletObject(walletAddress);
+
+        this.watchList[index] = newWallet;
 
         this.isLoading = false;
       }, 60 * 1000);
 
       this.observers.set(walletAddress, interval);
     },
+    async createWalletObject(walletAddress) {
+      const balance = await getBalance(walletAddress);
+      const transactions = await getTransactions(walletAddress);
+
+      const newWallet = {
+        address: walletAddress,
+        balance: Number(balance),
+        transactions,
+      };
+
+      return newWallet;
+    },
+  },
+  watch: {
+    watchList: {
+      deep: true,
+      handler(watchList) {
+        watchList.forEach((wallet) => {
+          if (this.observers.has(wallet.address)) return;
+          this.subscribeToUpdates(wallet.address);
+        });
+      },
+    },
+  },
+  mounted() {
+    const localWatchList = JSON.parse(window.localStorage.getItem('watchList'));
+    if (localWatchList) {
+      localWatchList.forEach((address, index) => {
+        setTimeout(async () => {
+          const newWallet = await this.createWalletObject(address);
+          this.watchList.push(newWallet);
+        }, index * 1100);
+      });
+    }
   },
   beforeUnmount() {
     this.observers.forEach((interval) => {
