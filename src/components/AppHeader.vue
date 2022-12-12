@@ -23,14 +23,16 @@
             />
           </svg>
         </button>
-        <button class="btn btn_round shadow">
+        <button @click="handleEditButton" class="btn btn_round shadow">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="w-6 h-6"
+            :class="{
+              'svg-active': editMode,
+            }"
           >
             <path
               stroke-linecap="round"
@@ -76,6 +78,13 @@ import AppInputModal from './AppInputModal.vue';
 export default {
   emits: {
     addWallet: null,
+    editMode: null,
+  },
+  props: {
+    editMode: {
+      type: Boolean,
+      required: true,
+    },
   },
   components: {
     AppInputModal,
@@ -84,6 +93,10 @@ export default {
     async handleAddButton() {
       const result = await this.$refs.addWalletModal.open();
       this.$emit('addWallet', result);
+    },
+    handleEditButton() {
+      this.$emit('editMode', !this.editMode);
+      console.log(this.editMode);
     },
   },
 };
@@ -114,5 +127,8 @@ export default {
     width: 4rem;
     height: 1px;
   }
+}
+.svg-active {
+  stroke: $green;
 }
 </style>

@@ -1,10 +1,16 @@
 <template>
-  <app-header @add-wallet="handleAddWallet" />
+  <app-header
+    :edit-mode="editMode"
+    @edit-mode="(state) => (editMode = state)"
+    @add-wallet="handleAddWallet"
+  />
   <app-body v-if="watchList.length">
     <app-wallet-item
       v-for="wallet in watchList"
       :key="wallet.address"
       :wallet="wallet"
+      :is-editable="editMode"
+      @remove="handleRemoveWallet"
     />
   </app-body>
   <div v-else class="container">
@@ -33,6 +39,7 @@ export default {
       isLoading: false,
       watchList: [],
       observers: new Map(),
+      editMode: false,
     };
   },
   methods: {
@@ -70,6 +77,27 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+    handleRemoveWallet(walletAddress) {
+      if (
+        !window.confirm(
+          'Are you really want to delete a wallet from your watch list?'
+        )
+      )
+        return;
+      this.watchList = this.watchList.filter(
+        (wallet) => wallet.address !== walletAddress
+      );
+      clearInterval(this.observers.get(walletAddress));
+      const localWatchList = JSON.parse(
+        window.localStorage.getItem('watchList')
+      );
+      window.localStorage.setItem(
+        'watchList',
+        JSON.stringify(
+          localWatchList.filter((address) => address !== walletAddress)
+        )
+      );
     },
     async subscribeToUpdates(walletAddress) {
       const index = this.watchList.findIndex(
