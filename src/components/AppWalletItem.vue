@@ -3,7 +3,7 @@
     <div class="wallet__info">
       <div class="wallet__info-item">
         <span class="wallet__suptitle">Wallet address:</span>
-        <p>{{ wallet.address }}</p>
+        <p v-clipboard="wallet.address">{{ wallet.address }}</p>
       </div>
       <div class="wallet__info-item">
         <span class="wallet__suptitle">Balance:</span>
@@ -40,8 +40,8 @@
             v-for="(transaction, idx) in wallet.transactions"
             :key="idx"
           >
-            <td>{{ transaction.from }}</td>
-            <td>{{ transaction.to }}</td>
+            <td v-clipboard="transaction.from">{{ transaction.from }}</td>
+            <td v-clipboard="transaction.to">{{ transaction.to }}</td>
             <td>{{ weiToEth(transaction.value) }}</td>
             <td>{{ dateBeautify(Number(transaction.timeStamp) * 1000) }}</td>
           </tr>
