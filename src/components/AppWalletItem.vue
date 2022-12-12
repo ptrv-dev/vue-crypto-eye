@@ -11,11 +11,13 @@
       </div>
       <div class="wallet__info-item">
         <span class="wallet__suptitle">Last transaction time:</span>
-        <p>11.12.2022 / 13:48</p>
+        <p>
+          {{ dateBeautify(Number(wallet.transactions[0].timeStamp) * 1000) }}
+        </p>
       </div>
       <div class="wallet__info-item">
         <span class="wallet__suptitle">Last transaction value:</span>
-        <p>0.45132 ETH</p>
+        <p>{{ weiToEth(wallet.transactions[0].value) }} ETH</p>
       </div>
     </div>
 

@@ -29,6 +29,7 @@ export default {
     return {
       isLoading: false,
       watchList: [],
+      observers: new Map(),
     };
   },
   methods: {
@@ -47,7 +48,7 @@ export default {
 
       try {
         const balance = await getBalance(walletAddress);
-        await new Promise((resolve) => setTimeout(resolve, 1100));
+        // await new Promise((resolve) => setTimeout(resolve, 1100));
         const transactions = await getTransactions(walletAddress);
 
         const newWallet = {
@@ -57,6 +58,7 @@ export default {
         };
 
         this.watchList.push(newWallet);
+        this.subscribeToUpdates(walletAddress);
       } catch (error) {
         if (String(error).toLowerCase().includes('invalid address format'))
           alert('Invalid address format');
@@ -66,6 +68,35 @@ export default {
         this.isLoading = false;
       }
     },
+    async subscribeToUpdates(walletAddress) {
+      const index = this.watchList.findIndex(
+        (wallet) => wallet.address === walletAddress
+      );
+      if (index === -1) return console.error('Subscribe to updates error!');
+
+      const interval = setInterval(async () => {
+        console.log('update');
+        this.isLoading = true;
+        const balance = await getBalance(walletAddress);
+        // await new Promise((resolve) => setTimeout(resolve, 1100));
+        const transactions = await getTransactions(walletAddress);
+
+        this.watchList[index] = {
+          address: walletAddress,
+          balance,
+          transactions,
+        };
+
+        this.isLoading = false;
+      }, 60 * 1000);
+
+      this.observers.set(walletAddress, interval);
+    },
+  },
+  beforeUnmount() {
+    this.observers.forEach((interval) => {
+      clearInterval(interval);
+    });
   },
 };
 </script>
